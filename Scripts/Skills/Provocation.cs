@@ -11,6 +11,7 @@ using Server.Engines.XmlSpawner2;
 using Server.Items;
 using Server.Mobiles;
 using Server.Targeting;
+using Server.Engines.Quests;
 #endregion
 
 namespace Server.SkillHandlers
@@ -162,6 +163,7 @@ namespace Server.SkillHandlers
 									from.SendLocalizedMessage(501602); // Your music succeeds, as you start a fight.
 									m_Instrument.PlayInstrumentWell(from);
 									m_Instrument.ConsumeUse(from);
+                                    QuestHelper.CheckIncite((PlayerMobile)from, m_Creature, creature);
 									m_Creature.Provoke(from, creature, true);
 								}
 							}

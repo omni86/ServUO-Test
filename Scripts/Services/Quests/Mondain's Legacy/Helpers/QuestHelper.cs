@@ -544,6 +544,32 @@ namespace Server.Engines.Quests
             }
         }
 
+        public static bool CheckIncite(PlayerMobile player, BaseCreature creature1, BaseCreature creature2)
+        {
+            for (int i = player.Quests.Count - 1; i >= 0; i--)
+            {
+                BaseQuest quest = player.Quests[i];
+
+                for (int j = quest.Objectives.Count - 1; j >= 0; j--)
+                {
+                    if (quest.Objectives[j] is InciteObjective)
+                    {
+                        InciteObjective incite = (InciteObjective)quest.Objectives[j];
+
+                        if (incite.Update(new Mobile[2] { creature1, creature2 })) {
+                            if (quest.Completed)
+                                quest.OnCompleted();
+                            else if (incite.Completed)
+                                player.PlaySound(quest.UpdateSound);
+
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
         public static bool CheckCreature(PlayerMobile player, BaseCreature creature)
         {
             for (int i = player.Quests.Count - 1; i >= 0; i --)

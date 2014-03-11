@@ -1,6 +1,7 @@
 using System;
 using Server.Mobiles;
 using Server.Regions;
+using System.Collections.Generic;
 
 namespace Server.Engines.Quests
 { 
@@ -177,6 +178,83 @@ namespace Server.Engines.Quests
             this.m_CurProgress = reader.ReadInt();
             this.m_Seconds = reader.ReadInt();
         }
+    }
+
+    public class InciteObjective : BaseObjective
+    {
+        private List<Type> m_Creature1;
+        private List<Type> m_Creature2;
+
+        public InciteObjective(List<Type> creature1, List<Type> creature2, int amount)
+            : base(amount, 0)
+        {
+            this.m_Creature1 = creature1;
+            this.m_Creature2 = creature2;
+        }
+
+        public List<Type> Creature1
+        {
+            get { return this.m_Creature1; }
+            set { this.m_Creature1 = value; }
+        }
+
+        public List<Type> Creature2
+        {
+            get { return this.m_Creature2; }
+            set { this.m_Creature2 = value; }
+        }
+
+        public virtual void OnIncite()
+        {
+            if (this.Completed)
+                this.Quest.Owner.SendLocalizedMessage(501827); // You have completed your quest!  Return to the person that gave you this task.
+            else
+                this.Quest.Owner.SendLocalizedMessage(1115748, (this.MaxProgress - this.CurProgress).ToString()); // Conflicts remaining to be incited:  ~1_val~.
+        }
+        public virtual bool IsObjective(Mobile mob1, Mobile mob2)
+        {
+            if (this.m_Creature1 == null || this.m_Creature2 == null)
+                return false;
+
+            if ( (this.m_Creature1.Contains(mob1.GetType()) && this.m_Creature2.Contains(mob2.GetType())) || (this.m_Creature1.Contains(mob2.GetType()) && this.m_Creature2.Contains(mob1.GetType())) ) {
+                return true;
+            }
+
+            return false;
+        }
+        public override bool Update(object obj)
+        {
+            if (obj is Mobile[])
+            {
+                Mobile mob1 = (obj as Mobile[])[0];
+                Mobile mob2 = (obj as Mobile[])[1];
+
+                if (this.IsObjective(mob1, mob2))
+                {
+                    if (!this.Completed)
+                        this.CurProgress += 1;
+
+                    this.OnIncite();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        public override void Serialize(GenericWriter writer)
+        {
+            base.Serialize(writer);
+
+            writer.WriteEncodedInt((int)0); // version
+        }
+
+        public override void Deserialize(GenericReader reader)
+        {
+            base.Deserialize(reader);
+
+            int version = reader.ReadEncodedInt();
+        }
+            
     }
 
     public class SlayObjective : BaseObjective
