@@ -50,7 +50,12 @@ namespace Server.Engines.Quests
 
         public override bool CanOffer()
         {
-            return true;
+            PlayerMobile pm = this.Owner as PlayerMobile;
+
+            if (pm.Skills.Musicianship.Base < 90.0 || pm.Skills.Provocation.Base < 90.0)
+                return false;
+            else
+                return true;
         }
 
         public override void Serialize(GenericWriter writer)
