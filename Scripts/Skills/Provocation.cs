@@ -105,15 +105,17 @@ namespace Server.SkillHandlers
 				{
 					BaseCreature creature = (BaseCreature)targeted;
 
+                    bool questTargets = QuestHelper.CheckIncite((PlayerMobile)from, m_Creature, creature, false);
+
 					if (!m_Instrument.IsChildOf(from.Backpack))
 					{
 						from.SendLocalizedMessage(1062488); // The instrument you are trying to play is no longer in your backpack!
 					}
-					else if (m_Creature.Unprovokable)
+                    else if (m_Creature.Unprovokable && !questTargets)
 					{
 						from.SendLocalizedMessage(1049446); // You have no chance of provoking those creatures.
 					}
-					else if (creature.Unprovokable && !(creature is DemonKnight))
+                    else if (creature.Unprovokable && !(creature is DemonKnight) && !questTargets)
 					{
 						from.SendLocalizedMessage(1049446); // You have no chance of provoking those creatures.
 					}
@@ -138,7 +140,7 @@ namespace Server.SkillHandlers
 							diff -= (music - 100.0) * 0.5;
 						}
 
-						if (from.CanBeHarmful(m_Creature, true) && from.CanBeHarmful(creature, true))
+                        if ((from.CanBeHarmful(m_Creature, true) && from.CanBeHarmful(creature, true)) || QuestHelper.CheckIncite((PlayerMobile)from, m_Creature, creature, false)) 
 						{
 							if (!BaseInstrument.CheckMusicianship(from))
 							{

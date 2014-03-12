@@ -359,6 +359,17 @@ namespace Server.Engines.Quests
 														
                     offset += 16;
                 }
+                else if (objective is InciteObjective)
+                {
+                    if (this.m_Quest.GetType() == typeof(IndoctrinationBattleRouserQuest))
+                    {
+                        InciteObjective incite = (InciteObjective)objective;
+
+                        this.AddHtmlLocalized(98, offset, 350, 16, 1115658, 0x15F90, false, false);
+
+                        offset += 16;
+                    }
+                }
             }
 			
             if (this.m_Offer)

@@ -184,12 +184,14 @@ namespace Server.Engines.Quests
     {
         private List<Type> m_Creature1;
         private List<Type> m_Creature2;
+        private string m_Name;
 
-        public InciteObjective(List<Type> creature1, List<Type> creature2, int amount)
+        public InciteObjective(List<Type> creature1, List<Type> creature2, int amount, string name)
             : base(amount, 0)
         {
             this.m_Creature1 = creature1;
             this.m_Creature2 = creature2;
+            this.m_Name = name;
         }
 
         public List<Type> Creature1
@@ -209,7 +211,7 @@ namespace Server.Engines.Quests
             if (this.Completed)
                 this.Quest.Owner.SendLocalizedMessage(501827); // You have completed your quest!  Return to the person that gave you this task.
             else
-                this.Quest.Owner.SendLocalizedMessage(1115748, (this.MaxProgress - this.CurProgress).ToString()); // Conflicts remaining to be incited:  ~1_val~.
+                this.Quest.Owner.SendLocalizedMessage(1115748, true, (this.MaxProgress - this.CurProgress).ToString()); // Conflicts remaining to be incited:  ~1_val~.
         }
         public virtual bool IsObjective(Mobile mob1, Mobile mob2)
         {
@@ -241,6 +243,19 @@ namespace Server.Engines.Quests
 
             return false;
         }
+
+        public string Name
+        {
+            get
+            {
+                return this.m_Name;
+            }
+            set
+            {
+                this.m_Name = value;
+            }
+        }
+
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

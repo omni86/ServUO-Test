@@ -544,17 +544,25 @@ namespace Server.Engines.Quests
             }
         }
 
-        public static bool CheckIncite(PlayerMobile player, BaseCreature creature1, BaseCreature creature2)
+        public static bool CheckIncite(PlayerMobile player, BaseCreature creature1, BaseCreature creature2, bool progress = true)
         {
             for (int i = player.Quests.Count - 1; i >= 0; i--)
             {
                 BaseQuest quest = player.Quests[i];
+
+                if (quest.Completed)
+                {
+                    return false;
+                }
 
                 for (int j = quest.Objectives.Count - 1; j >= 0; j--)
                 {
                     if (quest.Objectives[j] is InciteObjective)
                     {
                         InciteObjective incite = (InciteObjective)quest.Objectives[j];
+
+                        if (!progress)
+                            return true;
 
                         if (incite.Update(new Mobile[2] { creature1, creature2 })) {
                             if (quest.Completed)
