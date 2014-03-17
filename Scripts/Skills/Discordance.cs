@@ -12,6 +12,7 @@ using Server.Engines.XmlSpawner2;
 using Server.Items;
 using Server.Mobiles;
 using Server.Targeting;
+using Server.Engines.Quests;
 #endregion
 
 namespace Server.SkillHandlers
@@ -161,6 +162,7 @@ namespace Server.SkillHandlers
 							from.SendLocalizedMessage(1049539); // You play the song surpressing your targets strength
 							m_Instrument.PlayInstrumentWell(from);
 							m_Instrument.ConsumeUse(from);
+                            QuestHelper.CheckDiscord((PlayerMobile)from, (BaseCreature)targ);
 
 							ArrayList mods = new ArrayList();
 							int effect;

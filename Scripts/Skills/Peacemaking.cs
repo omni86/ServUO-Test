@@ -12,6 +12,7 @@ using Server.Engines.XmlSpawner2;
 using Server.Items;
 using Server.Mobiles;
 using Server.Targeting;
+using Server.Engines.Quests;
 #endregion
 
 namespace Server.SkillHandlers
@@ -224,6 +225,7 @@ namespace Server.SkillHandlers
 									targ.SendLocalizedMessage(500616); // You hear lovely music, and forget to continue battling!
 									targ.Combatant = null;
 									targ.Warmode = false;
+                                    QuestHelper.CheckCalm((PlayerMobile)from, (BaseCreature)targ);
 								}
 							}
 						}

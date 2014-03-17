@@ -235,8 +235,25 @@ namespace Server.Mobiles
 		private List<Mobile> m_AllFollowers;
 		private List<Mobile> m_RecentlyReported;
 
-		#region Guantlet Points
-		private double m_GauntletPoints;
+        #region Bard Masteries
+
+	    private List<string> m_BardMasteries = new List<string>();
+
+	    private string m_BardActiveMastery = null;
+	    private DateTime m_BardLastMasterySwitch = new DateTime();
+
+	    public List<string> BardMasteries { get { return m_BardMasteries; } set { m_BardMasteries = value; } }
+
+        public string BardActiveMastery { get { return m_BardActiveMastery; } set { m_BardActiveMastery = value; } }
+
+        public DateTime BardLastMasterySwitch { get { return m_BardLastMasterySwitch; } set { m_BardLastMasterySwitch = value; } }
+
+	    public bool BardIsIntoneActive { get; set; }
+
+	    #endregion
+
+        #region Guantlet Points
+        private double m_GauntletPoints;
 
 		[CommandProperty(AccessLevel.Administrator)]
 		public double GauntletPoints { get { return m_GauntletPoints; } set { m_GauntletPoints = value; } }
@@ -3029,7 +3046,8 @@ namespace Server.Mobiles
 
 		public PlayerMobile()
 		{
-			m_AutoStabled = new List<Mobile>();
+		    BardIsIntoneActive = false;
+		    m_AutoStabled = new List<Mobile>();
 
 			#region Mondain's Legacy
 			m_Quests = new List<BaseQuest>();
@@ -3256,7 +3274,8 @@ namespace Server.Mobiles
 		public PlayerMobile(Serial s)
 			: base(s)
 		{
-			m_VisList = new List<Mobile>();
+		    BardIsIntoneActive = false;
+		    m_VisList = new List<Mobile>();
 			m_AntiMacroTable = new Hashtable();
 			InvalidateMyRunUO();
 		}
@@ -3354,6 +3373,19 @@ namespace Server.Mobiles
 
 			switch (version)
 			{
+                case 30:
+			    {
+			        if (reader.ReadBool())
+			        {
+			            for (int i = reader.ReadInt(); i > 0; i--)
+			            {
+			                BardMasteries.Add(reader.ReadString());
+			            }
+
+			        }
+			        goto case 29;
+			    }
+
 				case 29:
 					{
 						m_GauntletPoints = reader.ReadDouble();
@@ -3761,9 +3793,24 @@ namespace Server.Mobiles
 
 			base.Serialize(writer);
 
-			writer.Write(29); // version old 28
+			writer.Write(30); // version old 28
 
-			// Version 29
+
+            // Version 30
+
+            writer.Write(BardMasteries.Count > 0);
+		    
+            if (BardMasteries.Count > 0)
+		    {
+                writer.Write(BardMasteries.Count);
+
+		        for (int i = BardMasteries.Count; i > 0; i--)
+		        {
+		            writer.Write(BardMasteries[i]);
+		        }
+		    }
+
+		    // Version 29
 			writer.Write(m_GauntletPoints);
 
 			#region Plant System

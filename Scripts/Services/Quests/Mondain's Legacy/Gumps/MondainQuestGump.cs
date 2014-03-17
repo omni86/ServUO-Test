@@ -370,6 +370,28 @@ namespace Server.Engines.Quests
                         offset += 16;
                     }
                 }
+                else if (objective is CalmObjective)
+                {
+                    if (this.m_Quest.GetType() == typeof(BeaconOfHarmony))
+                    {
+                        CalmObjective calm = (CalmObjective)objective;
+
+                        this.AddHtmlLocalized(98, offset, 350, 16, 1115678, 0x15F90, false, false); //Calm five mongbats.
+
+                        offset += 16;
+                    }
+                }
+                else if (objective is DiscordObjective)
+                {
+                    if (this.m_Quest.GetType() == typeof(WieldingSonicBlade))
+                    {
+                        DiscordObjective discord = (DiscordObjective)objective;
+
+                        this.AddHtmlLocalized(98, offset, 350, 16, 1115698, 0x15F90, false, false); // Discord five goats.
+
+                        offset += 16;
+                    }
+                }
             }
 			
             if (this.m_Offer)

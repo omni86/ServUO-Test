@@ -182,6 +182,10 @@ namespace Server.Spells
                     Register(692, typeof(Mystic.RisingColossusSpell));
                 }
                 #endregion
+
+                #region BardMasteries
+                Register(700, typeof(Bard.InspireSpell));
+                #endregion
             }
         }
 

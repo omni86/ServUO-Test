@@ -4554,12 +4554,19 @@
     <Compile Include="Items\Shields\- Misc\GargishSignOfOrder.cs" />
     <Compile Include="Items\Shields\- Misc\HumanSignOfChaos.cs" />
     <Compile Include="Items\Shields\- Misc\HumanSignOfOrder.cs" />
+    <Compile Include="Items\Skill Items\Magical\BookOfBardMasteries.cs" />
     <Compile Include="Items\Weapons\Artifacts\LightInTheVoid.cs" />
     <Compile Include="Items\Weapons\Artifacts\RunedDriftwoodBow.cs" />
     <Compile Include="Items\Weapons\Artifacts\StaffOfResonance.cs" />
     <Compile Include="Items\Weapons\Artifacts\ValkyriesGlaive.cs" />
     <Compile Include="Quests\Bard Masteries\Mobiles\BattleRouser.cs" />
+    <Compile Include="Quests\Bard Masteries\Mobiles\SongWielder.cs" />
+    <Compile Include="Quests\Bard Masteries\Mobiles\SpiritSoother.cs" />
+    <Compile Include="Quests\Bard Masteries\Quests\BeaconOfHarmony.cs" />
     <Compile Include="Quests\Bard Masteries\Quests\IndoctrinationBattleRouserQuest.cs" />
+    <Compile Include="Quests\Bard Masteries\Quests\WieldingSonicBlade.cs" />
+    <Compile Include="Spells\Bard\InspireChant.cs" />
+    <Compile Include="Spells\Bard\BardChant.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".\Quests\SA Sacred Quest\Sacred Quest Questions-Answers.txt" />
@@ -4585,6 +4592,9 @@
       <Project>{AE4A9EAA-E0EB-4DC9-9604-BE4289F9F6C3}</Project>
       <Name>Server</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Spells\Bard\Chants\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>

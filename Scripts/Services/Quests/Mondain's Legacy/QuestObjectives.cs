@@ -272,6 +272,177 @@ namespace Server.Engines.Quests
             
     }
 
+    public class CalmObjective : BaseObjective
+    {
+        private List<Type> m_Creature;
+        private string m_Name;
+
+        public CalmObjective(List<Type> creature, int amount, string name)
+            : base(amount, 0)
+        {
+            this.m_Creature = creature;
+            this.m_Name = name;
+        }
+
+        public List<Type> Creature
+        {
+            get { return this.m_Creature; }
+            set { this.m_Creature = value; }
+        }
+
+        public virtual void OnCalm()
+        {
+            if (this.Completed)
+                this.Quest.Owner.SendLocalizedMessage(501827); // You have completed your quest!  Return to the person that gave you this task.
+            else
+                this.Quest.Owner.SendLocalizedMessage(1115747, true, (this.MaxProgress - this.CurProgress).ToString()); // Creatures remaining to be calmed:   ~1_val~.
+        }
+
+        public virtual bool IsObjective(Mobile mob)
+        {
+            if (this.m_Creature == null)
+                return false;
+
+            if (this.m_Creature.Contains(mob.GetType()))
+            {
+                return true;
+            }
+
+            return false;
+        }
+        public override bool Update(object obj)
+        {
+            if (obj is Mobile)
+            {
+
+                Mobile mob = obj as Mobile;
+
+                if (this.IsObjective(mob))
+                {
+                    if (!this.Completed)
+                        this.CurProgress += 1;
+
+                    this.OnCalm();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public string Name
+        {
+            get
+            {
+                return this.m_Name;
+            }
+            set
+            {
+                this.m_Name = value;
+            }
+        }
+
+        public override void Serialize(GenericWriter writer)
+        {
+            base.Serialize(writer);
+
+            writer.WriteEncodedInt((int)0); // version
+        }
+
+        public override void Deserialize(GenericReader reader)
+        {
+            base.Deserialize(reader);
+
+            int version = reader.ReadEncodedInt();
+        }
+
+    }
+
+    public class DiscordObjective : BaseObjective
+    {
+        private List<Type> m_Creature;
+        private string m_Name;
+
+        public DiscordObjective(List<Type> creature, int amount, string name)
+            : base(amount, 0)
+        {
+            this.m_Creature = creature;
+            this.m_Name = name;
+        }
+
+        public List<Type> Creature
+        {
+            get { return this.m_Creature; }
+            set { this.m_Creature = value; }
+        }
+
+        public virtual void OnDiscord()
+        {
+            if (this.Completed)
+                this.Quest.Owner.SendLocalizedMessage(501827); // You have completed your quest!  Return to the person that gave you this task.
+            else
+                this.Quest.Owner.SendLocalizedMessage(1115749, true, (this.MaxProgress - this.CurProgress).ToString()); // Creatures remaining to be discorded: ~1_val~.
+        }
+
+        public virtual bool IsObjective(Mobile mob)
+        {
+            if (this.m_Creature == null)
+                return false;
+
+            if (this.m_Creature.Contains(mob.GetType()))
+            {
+                return true;
+            }
+
+            return false;
+        }
+        public override bool Update(object obj)
+        {
+            if (obj is Mobile)
+            {
+                Mobile mob = obj as Mobile;
+
+                if (this.IsObjective(mob))
+                {
+                    if (!this.Completed)
+                        this.CurProgress += 1;
+
+                    this.OnDiscord();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public string Name
+        {
+            get
+            {
+                return this.m_Name;
+            }
+            set
+            {
+                this.m_Name = value;
+            }
+        }
+
+        public override void Serialize(GenericWriter writer)
+        {
+            base.Serialize(writer);
+
+            writer.WriteEncodedInt((int)0); // version
+        }
+
+        public override void Deserialize(GenericReader reader)
+        {
+            base.Deserialize(reader);
+
+            int version = reader.ReadEncodedInt();
+        }
+
+    }
+
     public class SlayObjective : BaseObjective
     {
         private Type m_Creature;
