@@ -4565,8 +4565,14 @@
     <Compile Include="Quests\Bard Masteries\Quests\BeaconOfHarmony.cs" />
     <Compile Include="Quests\Bard Masteries\Quests\IndoctrinationBattleRouserQuest.cs" />
     <Compile Include="Quests\Bard Masteries\Quests\WieldingSonicBlade.cs" />
-    <Compile Include="Spells\Bard\InspireChant.cs" />
+    <Compile Include="Spells\Bard\Chants\DespairChant.cs" />
+    <Compile Include="Spells\Bard\Chants\InspireChant.cs" />
     <Compile Include="Spells\Bard\BardChant.cs" />
+    <Compile Include="Spells\Bard\Chants\InvigorateChant.cs" />
+    <Compile Include="Spells\Bard\Chants\PerseveranceChant.cs" />
+    <Compile Include="Spells\Bard\Chants\ResilienceChant.cs" />
+    <Compile Include="Spells\Bard\Chants\TribulationChant.cs" />
+    <Compile Include="Spells\Bard\Helpers\BardHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".\Quests\SA Sacred Quest\Sacred Quest Questions-Answers.txt" />
@@ -4593,9 +4599,7 @@
       <Name>Server</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Spells\Bard\Chants\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>
     <VisualStudio AllowExistingFolder="true" />

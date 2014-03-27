@@ -7,39 +7,28 @@
 #region References
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Server.Engines.PartySystem;
+using Server.Mobiles;
 using Server.Network;
+using Server.Targeting;
+
 #endregion
 
 namespace Server.Spells.Bard
 {
+
     public abstract class BardChant : Spell
     {
-        public BardChant(Mobile caster, Item scroll, SpellInfo info)
+        protected BardChant(Mobile caster, Item scroll, SpellInfo info)
             : base(caster, scroll, info)
         { }
 
-        public abstract double RequiredSkill { get; }
+        public virtual double RequiredSkill { get { return 90.0; } }
         public abstract int RequiredMana { get; }
-        public abstract int MantraNumber { get; }
-        public override SkillName CastSkill { get { return SkillName.Musicianship; } }
-        public override SkillName DamageSkill { get { return SkillName.Musicianship; } }
         public override bool ClearHandsOnCast { get { return false; } }
-        //public override int CastDelayBase{ get{ return 1; } }
         public override int CastRecoveryBase { get { return 8; } }
-
         public virtual int UpkeepCost { get { return 5; } }
-
-        public static int ComputePowerValue(Mobile from, int div)
-        {
-            if (from == null)
-            {
-                return 0;
-            }
-
-            int v = (int)Math.Sqrt(from.Karma + 20000 + (from.Skills.Chivalry.Fixed * 10));
-
-            return v / div;
-        }
 
         public override bool CheckCast()
         {
@@ -100,13 +89,7 @@ namespace Server.Spells.Bard
 
         public virtual void SendCastEffect()
         {
-            Caster.FixedEffect(0x37C4, 10, (int)(GetCastDelay().TotalSeconds * 28), 4, 3);
-        }
-
-        public override void GetCastSkills(out double min, out double max)
-        {
-            min = RequiredSkill;
-            max = RequiredSkill + 50.0;
+            Caster.FixedEffect(0x37C4, 10, (int)(GetCastDelay().TotalSeconds * 28), 39, 3);
         }
 
         public override int GetMana()
@@ -114,57 +97,101 @@ namespace Server.Spells.Bard
             return 0;
         }
 
-        public int ComputePowerValue(int div)
-        {
-            return ComputePowerValue(Caster, div);
-        }
-
-        protected BuffInfo m_BuffInfo = null;
     }
+
     public class BardTimer : Timer
     {
 
-        protected readonly int m_UpkeepCost = 0;
+        protected List<Mobile> m_Targets;
+
         protected readonly Mobile m_Caster;
-        protected readonly BuffInfo m_Buff;
-        public BardTimer(int upkeep, Mobile caster, BuffInfo buffInfo)
+
+        protected int m_TotalRounds = -1;
+        protected int m_CurrentRound = 0;
+
+        protected bool m_Beneficial;
+
+        protected BardEffect m_BardEffect;
+
+        public BardTimer(Mobile caster, bool beneficial, BardEffect effect)
+            : this(caster, beneficial, effect, -1)
+        {
+
+        }
+
+        public BardTimer(Mobile caster, bool beneficial, BardEffect effect, int rounds)
             : base(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(2))
         {
+            this.m_Targets = new List<Mobile>();
             this.m_Caster = caster;
-            this.m_UpkeepCost = upkeep;
-            this.m_Buff = buffInfo;
+            this.m_Beneficial = beneficial;
+            this.m_BardEffect = effect;
+
+            if (rounds > 0)
+                m_TotalRounds = rounds;
+
             this.Priority = TimerPriority.OneSecond;
             this.Start();
-            BuffInfo.AddBuff(m_Caster, m_Buff);
+
+        }
+
+
+        protected void CleanTargets(bool cleanAll = false)
+        {
+            if (cleanAll)
+            {
+                foreach (Mobile m in m_Targets.ToList())
+                {
+                    EndEffect(m);
+                }
+            }
+            else
+            {
+                foreach (Mobile m in m_Targets.ToList())
+                {
+                    if ((!m.InRange(m_Caster.Location, 8) || (m_Beneficial && (m_Caster.Party == null || !((Party)m_Caster.Party).Contains(m)))) && m != m_Caster)
+                        EndEffect(m);
+                }
+            }
+        }
+
+        protected void AddTarget(Mobile target)
+        {
+            if (!m_Targets.Contains(target) && target.InRange(m_Caster.Location, 8) && !((PlayerMobile)target).BardEffects.ContainsKey(m_BardEffect) && IsTarget(target))
+                StartEffect(target);
         }
 
         protected override void OnTick()
         {
-            int upkeepModifier = 0;
+            CleanTargets();
 
-            Console.WriteLine("BardTimer: OnTick()");
-            foreach (Mobile m in this.m_Caster.GetMobilesInRange(8))
+            if (m_Beneficial)
             {
-                Console.WriteLine("BardTimer: Checking if {0} is valid target.", m.Name);
-                if (IsTarget(m))
+                if (m_Caster.Party != null)
                 {
-                    Console.WriteLine("BardTimer: {0} is valid target.", m.Name);
-                    upkeepModifier += 1;
-                    this.Effect(m);
+                    foreach (PartyMemberInfo partyMember in ((Party) m_Caster.Party).Members)
+                    {
+                        AddTarget(partyMember.Mobile);
+                    }
+                }
+                else
+                {
+                    AddTarget(m_Caster);
                 }
             }
 
-            Console.WriteLine("BardTimer: Checking mana.");
-            if (this.m_Caster.Mana > m_UpkeepCost + (upkeepModifier / 5))
+            foreach (Mobile m in m_Targets)
+                Effect(m);
+
+
+            if (m_Targets.Count == 0 || m_Caster.Mana < BardHelper.GetUpkeepCost(m_Caster, m_BardEffect, m_Targets.Count))
             {
-                this.m_Caster.Mana -= m_UpkeepCost + (upkeepModifier / 5);
-            }
-            else
-            {
-                BuffInfo.RemoveBuff(m_Caster, m_Buff);
+                m_Caster.SendLocalizedMessage(1115710); // Your spell song has been interrupted.
+                CleanTargets(true);
                 this.Stop();
             }
-                
+            else
+                m_Caster.Mana -= BardHelper.GetUpkeepCost(m_Caster, m_BardEffect, m_Targets.Count);
         }
 
         protected virtual bool IsTarget(Mobile m)
@@ -172,9 +199,32 @@ namespace Server.Spells.Bard
             return false;
         }
 
-        protected virtual void Effect(Mobile target)
+        protected virtual void Effect(Mobile m)
         {
+            m.FixedEffect(0x376A, 10, (int)TimeSpan.FromSeconds(1).TotalSeconds * 28, 97, 3);
+        }
 
+        protected virtual void StartEffect(Mobile m)
+        {
+            ((PlayerMobile) m).AddBuff(BardHelper.GenerateBuffInfo(m_BardEffect, m_Caster));
+            m_Targets.Add(m);
+        }
+
+        protected virtual void EndEffect(Mobile m)
+        {
+            ((PlayerMobile) m).RemoveBuff(BardHelper.GenerateBuffInfo(m_BardEffect, m_Caster));
+            m.SendLocalizedMessage(1149722); // Your spellsong has ended.
+            m_Targets.Remove(m);
+        }
+
+       
+    }
+
+    public class BardTarget : Target
+    {
+        public BardTarget() 
+            : base(8, false, TargetFlags.None)
+        {
         }
     }
 }

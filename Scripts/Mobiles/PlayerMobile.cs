@@ -32,6 +32,7 @@ using Server.Network;
 using Server.Regions;
 using Server.SkillHandlers;
 using Server.Spells;
+using Server.Spells.Bard;
 using Server.Spells.Bushido;
 using Server.Spells.Fifth;
 using Server.Spells.Fourth;
@@ -241,6 +242,10 @@ namespace Server.Mobiles
 
 	    private string m_BardActiveMastery = null;
 	    private DateTime m_BardLastMasterySwitch = new DateTime();
+
+        private Dictionary<BardEffect, Dictionary<AosAttribute, int>> m_BardEffects = new Dictionary<BardEffect, Dictionary<AosAttribute, int>>();
+
+        public Dictionary<BardEffect, Dictionary<AosAttribute, int>> BardEffects { get { return m_BardEffects; } set { m_BardEffects = value; } }
 
 	    public List<string> BardMasteries { get { return m_BardMasteries; } set { m_BardMasteries = value; } }
 

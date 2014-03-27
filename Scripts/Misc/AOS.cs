@@ -4,6 +4,7 @@ using Server.Engines.XmlSpawner2;
 using Server.Items;
 using Server.Mobiles;
 using Server.Spells;
+using Server.Spells.Bard;
 using Server.Spells.Fifth;
 using Server.Spells.Ninjitsu;
 using Server.Spells.Seventh;
@@ -501,6 +502,17 @@ namespace Server
                 }
                 #endregion
             }
+
+            #region Bard Masteries
+            if (m is PlayerMobile)
+            {
+                foreach (KeyValuePair<BardEffect, Dictionary<AosAttribute, int>> bardEffect in ((PlayerMobile)m).BardEffects)
+                {
+                    if (bardEffect.Value != null && bardEffect.Value.ContainsKey(attribute))
+                        value += bardEffect.Value[attribute];
+                }
+            }
+            #endregion
 
             return value;
         }
