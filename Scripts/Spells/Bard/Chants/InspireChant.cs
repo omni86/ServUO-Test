@@ -18,6 +18,8 @@ namespace Server.Spells.Bard
             
         }
 
+        public override Type SongType { get { return typeof(InspireUpkeepTimer); } }
+
         public override TimeSpan CastDelayBase
         {
             get { return TimeSpan.FromSeconds(1.75); }
@@ -40,8 +42,10 @@ namespace Server.Spells.Bard
 
         public override void OnCast()
         {
-            new InspireUpkeepTimer(this.UpkeepCost, this.Caster).Start();
-            this.FinishSequence();
+            if (CanSing())
+                new InspireUpkeepTimer(this.UpkeepCost, this.Caster).Start();
+
+            this.FinishSequence();   
         }
 
     }

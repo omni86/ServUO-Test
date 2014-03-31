@@ -20,6 +20,8 @@ namespace Server.Spells.Bard
             
         }
 
+        public override Type SongType { get { return typeof(TribulationUpkeepTimer); } }
+
         public override TimeSpan CastDelayBase
         {
             get
@@ -63,7 +65,8 @@ namespace Server.Spells.Bard
         }
         public override void OnCast()
         {
-            BaseInstrument.PickInstrument(Caster, OnPickedInstrument);
+            if (CanSing())
+                BaseInstrument.PickInstrument(Caster, OnPickedInstrument);
             this.FinishSequence();
         }
 

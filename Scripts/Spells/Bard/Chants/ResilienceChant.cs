@@ -18,6 +18,8 @@ namespace Server.Spells.Bard
             
         }
 
+        public override Type SongType { get { return typeof(ResilianceUpkeepTimer); } }
+
         public override TimeSpan CastDelayBase
         {
             get
@@ -60,7 +62,8 @@ namespace Server.Spells.Bard
         }
         public override void OnCast()
         {
-            new ResilianceUpkeepTimer(this.UpkeepCost, this.Caster).Start();
+            if (CanSing()) 
+                new ResilianceUpkeepTimer(this.UpkeepCost, this.Caster).Start();
             this.FinishSequence();
         }
 

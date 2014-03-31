@@ -4,6 +4,7 @@ using Server.Engines.PartySystem;
 using Server.Engines.Quests.Ninja;
 using Server.Items;
 using Server.Mobiles;
+using Server.Targeting;
 
 namespace Server.Spells.Bard
 {
@@ -18,6 +19,8 @@ namespace Server.Spells.Bard
         {
             
         }
+
+        public override Type SongType { get { return typeof (PerseveranceUpkeepTimer); } }
 
         public override TimeSpan CastDelayBase
         {
@@ -62,7 +65,8 @@ namespace Server.Spells.Bard
         }
         public override void OnCast()
         {
-            new PerseveranceUpkeepTimer(this.UpkeepCost, this.Caster).Start();
+            if (CanSing())
+                new PerseveranceUpkeepTimer(this.UpkeepCost, this.Caster).Start();
             this.FinishSequence();
         }
 
@@ -81,37 +85,25 @@ namespace Server.Spells.Bard
 
         protected override bool IsTarget(Mobile m)
         {
-            if (this.m_Caster != m || (this.m_Caster.Party != null && ((Party)this.m_Caster.Party).Contains(m))) // Target self or party members
+            if (m_Caster == m || !m.Criminal)
                 return true;
 
             return false;
         }
 
-        protected override void Effect(Mobile m)
+        protected override void StartEffect(Mobile m)
         {
             //Sanity Check
             if (!(m is PlayerMobile)) return;
 
             PlayerMobile target = m as PlayerMobile;
 
-            if (target.BardEffects.ContainsKey(BardEffect.Perseverance))
+            target.BardEffects.Add(BardEffect.Perseverance, new Dictionary<AosAttribute, int>()
             {
-                target.AddStatMod(new StatMod(StatType.All, "Perseverance", 4, TimeSpan.FromHours(1.0)));
-                if (m_Heal == 2)
-                {
-                    m_Heal = 0;
-                    target.Hits += 16;
-                }
-                else m_Heal++;
-            }
-            else
-            {
-                target.BardEffects.Add(BardEffect.Perseverance, new Dictionary<AosAttribute, int>()
-                {
-                    { AosAttribute.DefendChance, 24 } 
-                });
-                //TODO: Setup SSAAttribute.CastingFocus
-            }
+                {AosAttribute.DefendChance, BardHelper.Scaler(m_Caster, 2, 24, 2)},
+            });
+
+            base.StartEffect(m);
         }
 
         protected override void EndEffect(Mobile m)
@@ -120,13 +112,9 @@ namespace Server.Spells.Bard
 
             PlayerMobile target = m as PlayerMobile;
 
-            if (target.BardEffects.ContainsKey(BardEffect.Perseverance))
-            {
-                target.BardEffects.Remove(BardEffect.Perseverance);
-                target.RemoveStatMod("Perseverance");
-            }
-            else
-                return;
+            target.BardEffects.Remove(BardEffect.Perseverance);
+
+            base.EndEffect(m);
         }
     }
 }

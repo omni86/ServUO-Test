@@ -28,6 +28,7 @@ namespace Server.Spells.Bard
         public abstract int RequiredMana { get; }
         public override bool ClearHandsOnCast { get { return false; } }
         public override int CastRecoveryBase { get { return 8; } }
+        public virtual Type SongType { get; set; }
         public virtual int UpkeepCost { get { return 5; } }
 
         public override bool CheckCast()
@@ -97,6 +98,18 @@ namespace Server.Spells.Bard
             return 0;
         }
 
+        protected bool CanSing()
+        {
+            BardTimer timer = BardHelper.GetActiveSong(Caster, SongType);
+
+            if (timer == null) return true;
+            
+            timer.EndSong();
+            
+            return false;
+        }
+
+
     }
 
     public class BardTimer : Timer
@@ -131,10 +144,17 @@ namespace Server.Spells.Bard
                 m_TotalRounds = rounds;
 
             this.Priority = TimerPriority.OneSecond;
+            ((PlayerMobile) caster).ActiveSongs.Add(this);
             this.Start();
 
         }
 
+        public void EndSong()
+        {
+            m_Caster.SendLocalizedMessage(1115710); // Your spell song has been interrupted.
+            CleanTargets(true);
+            this.Stop();
+        }
 
         protected void CleanTargets(bool cleanAll = false)
         {
@@ -185,11 +205,7 @@ namespace Server.Spells.Bard
 
 
             if (m_Targets.Count == 0 || m_Caster.Mana < BardHelper.GetUpkeepCost(m_Caster, m_BardEffect, m_Targets.Count))
-            {
-                m_Caster.SendLocalizedMessage(1115710); // Your spell song has been interrupted.
-                CleanTargets(true);
-                this.Stop();
-            }
+                EndSong();
             else
                 m_Caster.Mana -= BardHelper.GetUpkeepCost(m_Caster, m_BardEffect, m_Targets.Count);
         }
@@ -216,7 +232,6 @@ namespace Server.Spells.Bard
             m.SendLocalizedMessage(1149722); // Your spellsong has ended.
             m_Targets.Remove(m);
         }
-
        
     }
 

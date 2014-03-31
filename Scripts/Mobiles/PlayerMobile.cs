@@ -239,6 +239,7 @@ namespace Server.Mobiles
         #region Bard Masteries
 
 	    private List<string> m_BardMasteries = new List<string>();
+        public List<BardTimer> m_ActiveSongs = new List<BardTimer>();
 
 	    private string m_BardActiveMastery = null;
 	    private DateTime m_BardLastMasterySwitch = new DateTime();
@@ -253,7 +254,7 @@ namespace Server.Mobiles
 
         public DateTime BardLastMasterySwitch { get { return m_BardLastMasterySwitch; } set { m_BardLastMasterySwitch = value; } }
 
-	    public bool BardIsIntoneActive { get; set; }
+        public List<BardTimer> ActiveSongs { get { return m_ActiveSongs; } }
 
 	    #endregion
 
@@ -3051,7 +3052,6 @@ namespace Server.Mobiles
 
 		public PlayerMobile()
 		{
-		    BardIsIntoneActive = false;
 		    m_AutoStabled = new List<Mobile>();
 
 			#region Mondain's Legacy
@@ -3279,7 +3279,6 @@ namespace Server.Mobiles
 		public PlayerMobile(Serial s)
 			: base(s)
 		{
-		    BardIsIntoneActive = false;
 		    m_VisList = new List<Mobile>();
 			m_AntiMacroTable = new Hashtable();
 			InvalidateMyRunUO();
