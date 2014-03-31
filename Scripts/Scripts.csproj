@@ -761,12 +761,10 @@
     <Compile Include=".\Items\Armor\GargishPlate\GargishPlateChest.cs" />
     <Compile Include=".\Items\Armor\GargishPlate\GargishPlateKilt.cs" />
     <Compile Include=".\Items\Armor\GargishPlate\GargishPlateLegs.cs" />
-    <Compile Include=".\Items\Armor\GargishPlate\GargishPlateWingArmor.cs" />
     <Compile Include=".\Items\Armor\GargishStone\GargishStoneArms.cs" />
     <Compile Include=".\Items\Armor\GargishStone\GargishStoneChest.cs" />
     <Compile Include=".\Items\Armor\GargishStone\GargishStoneLegs.cs" />
     <Compile Include=".\Items\Armor\GargishStone\GargishStonePlateKilt.cs" />
-    <Compile Include=".\Items\Armor\GargishStone\GargishStoneWingArmor.cs" />
     <Compile Include=".\Items\Armor\Glasses\AnthropomorphistGlasses.cs" />
     <Compile Include=".\Items\Armor\Glasses\ArtsGlasses.cs" />
     <Compile Include=".\Items\Armor\Glasses\ElvenGlasses.cs" />
