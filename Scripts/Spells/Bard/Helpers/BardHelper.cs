@@ -29,14 +29,14 @@ namespace Server.Spells.Bard
                     int HCI_SPI = Scaler(caster, 4, 16, 1);
                     int DI = Scaler(caster, 20, 40, 3);
                     int BDM = Scaler(caster, 1, 15, 0);
-                    return new BuffInfo(BuffIcon.Bleed, 1115612, 1151951,
+                    return new BuffInfo(BuffIcon.Inspire, 1115612, 1151951,
                         String.Format("{0}\t{1}\t{2}\t{3}", HCI_SPI, HCI_SPI, DI, BDM), false);
                         // Inspire +~1_HCI~% Hit Chance Increase.<br>+~2_SDI~% Spell Damage Increase.<br>+~3_DI~% Damage Increase.<br>Bonus Damage Modifier: + ~4_DM~%
 
                 case BardEffect.Invigorate:
                     int statIncrease = Scaler(caster, 8, 8, 2);
                     int HPI = Scaler(caster, 20, 20, 2);
-                    return new BuffInfo(BuffIcon.Invisibility, 1115613, 1115730,
+                    return new BuffInfo(BuffIcon.Invigorate, 1115613, 1115730,
                         String.Format("{0}\t{1}\t{2}\t{3}", HPI, statIncrease, statIncrease, statIncrease), false);
                         // Invigorate +~1_HPI~ Hit Point Increase.<br>+~2_STR~ Strength.<br>+~3_INT~ Intelligence.<br>+~4_DEX~ Dexterity.<br>
             }
@@ -84,14 +84,17 @@ namespace Server.Spells.Bard
         {
             int complementryPoints = 0;
 
-            if (mobile.Skills.Peacemaking.Base >= 120)
-                complementryPoints++;
+            if (mobile.Skills.Peacemaking.Base > 100)
+                complementryPoints += (int) Math.Floor((mobile.Skills.Peacemaking.Base - 100.0)/10);
 
-            if (mobile.Skills.Discordance.Base >= 120.0)
-                complementryPoints++;
+            if (mobile.Skills.Discordance.Base > 100)
+                complementryPoints += (int)Math.Floor((mobile.Skills.Discordance.Base - 100.0) / 10);
 
-            if (mobile.Skills.Provocation.Base >= 120.0)
-                complementryPoints++;
+            if (mobile.Skills.Provocation.Base > 100)
+                complementryPoints += (int)Math.Floor((mobile.Skills.Provocation.Base - 100.0) / 10);
+
+            if (mobile.Skills.Musicianship.Base > 100)
+                complementryPoints += (int)Math.Floor((mobile.Skills.Musicianship.Base - 100.0) / 10);
 
 
             double scale = (high - low)/(120.0 - 90.0);
@@ -101,6 +104,13 @@ namespace Server.Spells.Bard
             value += (complementryModifier*complementryPoints);
             
             return value;
+        }
+
+        public static BardTimer GetActiveSong(Mobile mobile, Type songType)
+        {
+            if (!(mobile is PlayerMobile)) return null;
+
+            return ((PlayerMobile)mobile).ActiveSongs.FirstOrDefault(song => song.GetType() == songType);
         }
     }
 }
