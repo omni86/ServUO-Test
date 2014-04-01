@@ -24,6 +24,7 @@ using Server.Network;
 using Server.Regions;
 using Server.SkillHandlers;
 using Server.Spells;
+using Server.Spells.Bard;
 using Server.Spells.Bushido;
 using Server.Spells.Necromancy;
 using Server.Spells.Sixth;
@@ -259,9 +260,13 @@ namespace Server.Mobiles
 
 		public int FollowRange { get; set; }
 
-		/* Do not serialize this till the code is finalized */
+        /* Do not serialize this till the code is finalized */
+        #region Bard Masteries
+        private Dictionary<BardEffect, Mobile> m_BardEffects = new Dictionary<BardEffect, Mobile>();
+        public Dictionary<BardEffect, Mobile> BardEffects { get { return m_BardEffects; } set { m_BardEffects = value; } }
+        #endregion
 
-		private bool m_SeeksHome;
+        private bool m_SeeksHome;
 
 		[CommandProperty(AccessLevel.GameMaster)]
 		public bool SeeksHome { get { return m_SeeksHome; } set { m_SeeksHome = value; } }

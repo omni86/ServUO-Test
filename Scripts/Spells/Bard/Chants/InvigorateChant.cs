@@ -91,12 +91,9 @@ namespace Server.Spells.Bard
 
             PlayerMobile target = m as PlayerMobile;
 
-            target.BardEffects.Add(BardEffect.Invigorate, new Dictionary<AosAttribute, int>()
-            {
-                { AosAttribute.BonusHits, BardHelper.Scaler(m_Caster, 20, 20, 2) }
-            });
+            BardHelper.AddEffect(m_Caster, target, BardEffect.Invigorate);
 
-            target.AddStatMod(new StatMod(StatType.All, "Invigorate", BardHelper.Scaler(m_Caster, 8, 8, 2), TimeSpan.FromHours(1.0)));
+            target.AddStatMod(new StatMod(StatType.All, "Invigorate", BardHelper.Scaler(m_Caster, 8, 8, 1), TimeSpan.FromHours(1.0)));
 
             target.SendLocalizedMessage(1115737); // You feel invigorated by the bard's spellsong.
 
@@ -107,7 +104,7 @@ namespace Server.Spells.Bard
         {
             if (!m_LastHeal.ContainsKey(m) || m_LastHeal[m] <= DateTime.UtcNow)
             {
-                m.Heal(BardHelper.Scaler(m_Caster, 4, 16, 2), m_Caster);
+                m.Heal(BardHelper.Scaler(m_Caster, 4, 16, 1), m_Caster);
                 m_LastHeal[m] = DateTime.UtcNow + TimeSpan.FromSeconds(4);
             }
 

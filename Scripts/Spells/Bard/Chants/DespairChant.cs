@@ -73,7 +73,7 @@ namespace Server.Spells.Bard
         public static void OnPickedInstrument(Mobile from, BaseInstrument instrument)
         {
             from.RevealingAction();
-            from.Target = new DespairTarget(from, instrument, new DespairChant(from, null).UpkeepCost);
+            from.Target = new DespairTarget(from, instrument);
             from.NextSkillTime = Core.TickCount + 21600000;
         }
 
@@ -83,12 +83,10 @@ namespace Server.Spells.Bard
     {
         private readonly BaseInstrument m_Instrument;
         private readonly bool m_SetSkillTime = true;
-        private readonly int m_Upkeep;
-        public DespairTarget(Mobile from, BaseInstrument instrument, int upkeep)
+        public DespairTarget(Mobile from, BaseInstrument instrument)
             : base(BaseInstrument.GetBardRange(from, SkillName.Discordance), false, TargetFlags.None)
         {
             m_Instrument = instrument;
-            m_Upkeep = upkeep;
         }
 
         protected override void OnTargetFinish(Mobile @from)
@@ -120,7 +118,7 @@ namespace Server.Spells.Bard
             }
             else
             {
-                DespairUpkeepTimer song = new DespairUpkeepTimer(m_Upkeep, from, null, (Mobile)targeted);
+                DespairUpkeepTimer song = new DespairUpkeepTimer(from, (Mobile)targeted);
 
             }
         }
@@ -130,37 +128,38 @@ namespace Server.Spells.Bard
     {
         private readonly Mobile m_Target;
 
-        public DespairUpkeepTimer(int upkeep, Mobile caster, BuffInfo buffInfo, Mobile target)
+        public DespairUpkeepTimer(Mobile caster, Mobile target)
             : base(caster, false, BardEffect.Despair, 11)
         {
             m_Target = target;
+            AddTarget(target);
         }
 
-        protected override void OnTick()
-        {
-            if (++m_CurrentRound >= m_TotalRounds)
-                EndEffect(m_Target);
-            else
-                Effect(m_Target);
 
+        protected override bool IsTarget(Mobile m)
+        {
+            return m_Target == m;
         }
 
-        protected override void Effect(Mobile target)
+        protected override void StartEffect(Mobile m)
         {
-            //Sanity Check
-            if (!(target is Mobile)) return;
+            BardHelper.AddEffect(m_Caster, m, BardEffect.Despair);
+            m.AddStatMod(new StatMod(StatType.Str, "Despair", -1 * BardHelper.Scaler(m_Caster, 4, 16, 1), TimeSpan.FromHours(1)));
 
-            m_Caster.SendMessage("Despair is not yet activated");
-            this.Stop();
+            base.StartEffect(m);
+        }
 
-
+        protected override void Effect(Mobile m)
+        {
+            SpellHelper.Damage(TimeSpan.FromSeconds(1), m, m_Caster, BardHelper.Scaler(m_Caster, 9, 36, 1));
+            base.Effect(m);
         }
 
         protected override void EndEffect(Mobile m)
         {
-            if (!(m is Mobile)) return;
-
-            this.Stop();
+            BardHelper.RemoveEffect(m, BardEffect.Despair);
+            m.RemoveStatMod("Despair");
+            base.EndEffect(m);
         }
     }
 }

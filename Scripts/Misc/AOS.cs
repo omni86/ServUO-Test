@@ -218,6 +218,22 @@ namespace Server
                 }
             }
 
+            #region Bard Masteries
+
+            Mobile bard = BardHelper.HasEffect(from, BardEffect.Inspire);
+            if (bard != null)
+                totalDamage += totalDamage * BardHelper.Scaler(bard, 1, 15, 0) / 100;
+
+            bard = BardHelper.HasEffect(from, BardEffect.Tribulation);
+
+            
+            if (bard != null && Utility.RandomDouble() < (BardHelper.Scaler(bard, 15, 60, 3)/100))
+            {
+                totalDamage += totalDamage*BardHelper.Scaler(bard, 8, 32, 2)/100;
+            }
+
+            #endregion
+
             m.Damage(totalDamage, from);
 
             #region Stygian Abyss
@@ -506,10 +522,70 @@ namespace Server
             #region Bard Masteries
             if (m is PlayerMobile)
             {
-                foreach (KeyValuePair<BardEffect, Dictionary<AosAttribute, int>> bardEffect in ((PlayerMobile)m).BardEffects)
+                Mobile bard;
+
+                switch (attribute)
                 {
-                    if (bardEffect.Value != null && bardEffect.Value.ContainsKey(attribute))
-                        value += bardEffect.Value[attribute];
+                    case AosAttribute.AttackChance:
+                    {
+                        bard = BardHelper.HasEffect(m, BardEffect.Inspire);
+
+                        if (bard != null)
+                            value += BardHelper.Scaler(bard, 4, 16, 1);
+
+                        bard = BardHelper.HasEffect(m, BardEffect.Tribulation);
+
+                        if (bard != null)
+                            value -= BardHelper.Scaler(bard, 5, 22, 2);
+                        break;
+                    }
+                    case AosAttribute.SpellDamage:
+                    {
+                        bard = BardHelper.HasEffect(m, BardEffect.Inspire);
+
+                        if (bard != null)
+                            value += BardHelper.Scaler(bard, 4, 16, 1);
+
+                        bard = BardHelper.HasEffect(m, BardEffect.Tribulation);
+
+                        if (bard != null)
+                            value -= BardHelper.Scaler(bard, 5, 22, 2);
+                        break;
+                    }
+                    case AosAttribute.WeaponDamage:
+                    {
+                        bard = BardHelper.HasEffect(m, BardEffect.Inspire);
+
+                        if (bard != null)
+                            value += BardHelper.Scaler(bard, 20, 40, 3);
+                        break;
+                    }
+                    case AosAttribute.BonusHits:
+                    {
+                        bard = BardHelper.HasEffect(m, BardEffect.Invigorate);
+
+                        if (bard != null)
+                            value += BardHelper.Scaler(bard, 4, 20, 1);
+                        break;
+                    }
+                    case AosAttribute.RegenHits:
+                    case AosAttribute.RegenMana:
+                    case AosAttribute.RegenStam:
+                    {
+                        bard = BardHelper.HasEffect(m, BardEffect.Resilience);
+
+                        if (bard != null)
+                            value += BardHelper.Scaler(bard, 4, 20, 2);
+                        break;
+                    }
+                    case AosAttribute.DefendChance:
+                    {
+                        bard = BardHelper.HasEffect(m, BardEffect.Perseverance);
+
+                        if (bard != null)
+                            value += BardHelper.Scaler(bard, 2, 24, 1);
+                        break;
+                    }
                 }
             }
             #endregion
@@ -1998,6 +2074,25 @@ namespace Server
                         value += attrs[attribute];
                 }
             }
+
+            #region Bard Masteries
+            if (m is PlayerMobile)
+            {
+                Mobile bard;
+
+                switch (attribute)
+                {
+                    case SAAbsorptionAttribute.CastingFocus:
+                        {
+                            bard = BardHelper.HasEffect(m, BardEffect.Perseverance);
+
+                            if (bard != null)
+                                value += BardHelper.Scaler(bard, 1, 4, 0);
+                            break;
+                        }
+                }
+            }
+            #endregion
 
             return value;
         }

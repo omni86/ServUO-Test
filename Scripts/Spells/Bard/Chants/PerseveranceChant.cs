@@ -98,10 +98,7 @@ namespace Server.Spells.Bard
 
             PlayerMobile target = m as PlayerMobile;
 
-            target.BardEffects.Add(BardEffect.Perseverance, new Dictionary<AosAttribute, int>()
-            {
-                {AosAttribute.DefendChance, BardHelper.Scaler(m_Caster, 2, 24, 2)},
-            });
+            BardHelper.AddEffect(m_Caster, target, BardEffect.Perseverance);
 
             base.StartEffect(m);
         }

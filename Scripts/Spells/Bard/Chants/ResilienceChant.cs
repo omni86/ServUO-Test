@@ -79,32 +79,21 @@ namespace Server.Spells.Bard
 
         protected override bool IsTarget(Mobile m)
         {
-            if (this.m_Caster != m || (this.m_Caster.Party != null && ((Party)this.m_Caster.Party).Contains(m))) // party members
+            if (this.m_Caster == m || !m.Criminal) // party members
                 return true;
 
             return false;
         }
 
-        protected override void Effect(Mobile m)
+        protected override void StartEffect(Mobile m)
         {
             //Sanity Check
             if (!(m is PlayerMobile)) return;
 
             PlayerMobile target = m as PlayerMobile;
+            BardHelper.AddEffect(m_Caster, target, BardEffect.Resilience);
 
-            if (target.BardEffects.ContainsKey(BardEffect.Resilience))
-                return;
-            else
-            {
-                target.BardEffects.Add(BardEffect.Resilience, new Dictionary<AosAttribute, int>()
-                {
-                    { AosAttribute.RegenHits, 16 },
-                    { AosAttribute.RegenMana, 16 },
-                    { AosAttribute.RegenStam, 16 }
-                });
-            }
-
-
+            base.StartEffect(m);
         }
 
         protected override void EndEffect(Mobile m)
@@ -113,10 +102,7 @@ namespace Server.Spells.Bard
 
             PlayerMobile target = m as PlayerMobile;
 
-            if (target.BardEffects.ContainsKey(BardEffect.Resilience))
-                target.BardEffects.Remove(BardEffect.Resilience);
-            else
-                return;
+            target.BardEffects.Remove(BardEffect.Resilience);
         }
     }
 }

@@ -153,6 +153,8 @@ namespace Server.Spells.Bard
         {
             m_Caster.SendLocalizedMessage(1115710); // Your spell song has been interrupted.
             CleanTargets(true);
+            if (m_Caster is PlayerMobile)
+                ((PlayerMobile) m_Caster).ActiveSongs.Remove(this);
             this.Stop();
         }
 
@@ -177,8 +179,9 @@ namespace Server.Spells.Bard
 
         protected void AddTarget(Mobile target)
         {
-            if (!m_Targets.Contains(target) && target.InRange(m_Caster.Location, 8) && !((PlayerMobile)target).BardEffects.ContainsKey(m_BardEffect) && IsTarget(target))
+            if (!m_Targets.Contains(target) && target.InRange(m_Caster.Location, 8) && BardHelper.HasEffect(target, m_BardEffect) == null && IsTarget(target))
                 StartEffect(target);
+
         }
 
         protected override void OnTick()
@@ -203,9 +206,13 @@ namespace Server.Spells.Bard
             foreach (Mobile m in m_Targets)
                 Effect(m);
 
-
             if (m_Targets.Count == 0 || m_Caster.Mana < BardHelper.GetUpkeepCost(m_Caster, m_BardEffect, m_Targets.Count))
                 EndSong();
+            else if (!m_Beneficial)
+            {
+                if (++m_CurrentRound >= m_TotalRounds)
+                    EndSong();
+            }
             else
                 m_Caster.Mana -= BardHelper.GetUpkeepCost(m_Caster, m_BardEffect, m_Targets.Count);
         }
@@ -222,15 +229,26 @@ namespace Server.Spells.Bard
 
         protected virtual void StartEffect(Mobile m)
         {
-            ((PlayerMobile) m).AddBuff(BardHelper.GenerateBuffInfo(m_BardEffect, m_Caster));
-            m_Targets.Add(m);
+            if (m is PlayerMobile)
+            {
+                ((PlayerMobile)m).AddBuff(BardHelper.GenerateBuffInfo(m_BardEffect, m_Caster));
+                m_Targets.Add(m);
+            }
+            else
+                m_Targets.Add(m);
+            
         }
 
         protected virtual void EndEffect(Mobile m)
         {
-            ((PlayerMobile) m).RemoveBuff(BardHelper.GenerateBuffInfo(m_BardEffect, m_Caster));
-            m.SendLocalizedMessage(1149722); // Your spellsong has ended.
-            m_Targets.Remove(m);
+            if (m is PlayerMobile)
+            {
+                ((PlayerMobile)m).RemoveBuff(BardHelper.GenerateBuffInfo(m_BardEffect, m_Caster));
+                m_Targets.Remove(m);
+                m.SendLocalizedMessage(1149722); // Your spellsong has ended.
+            }
+            else
+                m_Targets.Remove(m);
         }
        
     }

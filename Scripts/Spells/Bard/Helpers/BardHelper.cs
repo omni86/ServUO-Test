@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// **********
+// ServUO - BardHelper.cs
+// **********
+
+#region References
+
+using System;
 using System.Linq;
-using System.Text;
 using Server.Mobiles;
+
+#endregion
 
 namespace Server.Spells.Bard
 {
-
     public enum BardEffect
     {
         Inspire = 0,
@@ -19,26 +24,24 @@ namespace Server.Spells.Bard
 
     public static class BardHelper
     {
-
         public static BuffInfo GenerateBuffInfo(BardEffect effect, Mobile caster)
         {
             switch (effect)
             {
-
                 case BardEffect.Inspire:
                     int HCI_SPI = Scaler(caster, 4, 16, 1);
                     int DI = Scaler(caster, 20, 40, 3);
                     int BDM = Scaler(caster, 1, 15, 0);
                     return new BuffInfo(BuffIcon.Inspire, 1115612, 1151951,
                         String.Format("{0}\t{1}\t{2}\t{3}", HCI_SPI, HCI_SPI, DI, BDM), false);
-                        // Inspire +~1_HCI~% Hit Chance Increase.<br>+~2_SDI~% Spell Damage Increase.<br>+~3_DI~% Damage Increase.<br>Bonus Damage Modifier: + ~4_DM~%
+                    // Inspire +~1_HCI~% Hit Chance Increase.<br>+~2_SDI~% Spell Damage Increase.<br>+~3_DI~% Damage Increase.<br>Bonus Damage Modifier: + ~4_DM~%
 
                 case BardEffect.Invigorate:
                     int statIncrease = Scaler(caster, 8, 8, 2);
                     int HPI = Scaler(caster, 20, 20, 2);
                     return new BuffInfo(BuffIcon.Invigorate, 1115613, 1115730,
                         String.Format("{0}\t{1}\t{2}\t{3}", HPI, statIncrease, statIncrease, statIncrease), false);
-                        // Invigorate +~1_HPI~ Hit Point Increase.<br>+~2_STR~ Strength.<br>+~3_INT~ Intelligence.<br>+~4_DEX~ Dexterity.<br>
+                    // Invigorate +~1_HPI~ Hit Point Increase.<br>+~2_STR~ Strength.<br>+~3_INT~ Intelligence.<br>+~4_DEX~ Dexterity.<br>
             }
 
             return new BuffInfo(BuffIcon.Bless, 500000);
@@ -47,11 +50,11 @@ namespace Server.Spells.Bard
         public static BuffInfo[] BardBuffInfo = new BuffInfo[6]
         {
             new BuffInfo(BuffIcon.MagicReflection, 1115612, false), // Inspire
-            new BuffInfo(BuffIcon.MagicReflection, 1115613, false), 
+            new BuffInfo(BuffIcon.MagicReflection, 1115613, false),
             new BuffInfo(BuffIcon.MagicReflection, 1115614, false), // Resilience
             new BuffInfo(BuffIcon.MagicReflection, 1115615, false), // Perseverance
             new BuffInfo(BuffIcon.MagicReflection, 1115616, false), // Tribulation
-            new BuffInfo(BuffIcon.MagicReflection, 1115617, false)  // Despair
+            new BuffInfo(BuffIcon.MagicReflection, 1115617, false) // Despair
         };
 
         public static int[] BardUpkeepCosts = new int[6]
@@ -68,7 +71,7 @@ namespace Server.Spells.Bard
         {
             int cost = BardUpkeepCosts[(int) effect];
 
-            cost += targets / 5;
+            cost += targets/5;
 
             if (caster.Skills.Peacemaking.Base > 100.0)
                 cost -= 1;
@@ -88,13 +91,13 @@ namespace Server.Spells.Bard
                 complementryPoints += (int) Math.Floor((mobile.Skills.Peacemaking.Base - 100.0)/10);
 
             if (mobile.Skills.Discordance.Base > 100)
-                complementryPoints += (int)Math.Floor((mobile.Skills.Discordance.Base - 100.0) / 10);
+                complementryPoints += (int) Math.Floor((mobile.Skills.Discordance.Base - 100.0)/10);
 
             if (mobile.Skills.Provocation.Base > 100)
-                complementryPoints += (int)Math.Floor((mobile.Skills.Provocation.Base - 100.0) / 10);
+                complementryPoints += (int) Math.Floor((mobile.Skills.Provocation.Base - 100.0)/10);
 
             if (mobile.Skills.Musicianship.Base > 100)
-                complementryPoints += (int)Math.Floor((mobile.Skills.Musicianship.Base - 100.0) / 10);
+                complementryPoints += (int) Math.Floor((mobile.Skills.Musicianship.Base - 100.0)/10);
 
 
             double scale = (high - low)/(120.0 - 90.0);
@@ -102,7 +105,7 @@ namespace Server.Spells.Bard
             int value = (int) (low + ((mobile.Skills.Musicianship.Base - 90)*scale));
 
             value += (complementryModifier*complementryPoints);
-            
+
             return value;
         }
 
@@ -110,7 +113,34 @@ namespace Server.Spells.Bard
         {
             if (!(mobile is PlayerMobile)) return null;
 
-            return ((PlayerMobile)mobile).ActiveSongs.FirstOrDefault(song => song.GetType() == songType);
+            return ((PlayerMobile) mobile).ActiveSongs.FirstOrDefault(song => song.GetType() == songType);
+        }
+
+        public static void AddEffect(Mobile caster, Mobile target, BardEffect effect)
+        {
+            if (target is PlayerMobile && !((PlayerMobile)target).BardEffects.ContainsKey(effect))
+                ((PlayerMobile) target).BardEffects.Add(effect, caster);
+            else if (target is BaseCreature && !((BaseCreature)target).BardEffects.ContainsKey(effect))
+                ((BaseCreature) target).BardEffects.Add(effect, caster);
+        }
+
+        public static void RemoveEffect(Mobile target, BardEffect effect)
+        {
+            if (target is PlayerMobile && ((PlayerMobile)target).BardEffects.ContainsKey(effect))
+                ((PlayerMobile)target).BardEffects.Remove(effect);
+            else if (target is BaseCreature && ((BaseCreature)target).BardEffects.ContainsKey(effect))
+                ((BaseCreature)target).BardEffects.Remove(effect);
+        }
+
+        public static Mobile HasEffect(Mobile target, BardEffect effect)
+        {
+            if (target is PlayerMobile)
+                return ((PlayerMobile)target).BardEffects.ContainsKey(effect) ? ((PlayerMobile) target).BardEffects[effect] : null;
+            
+            if (target is BaseCreature)
+                return ((BaseCreature)target).BardEffects.ContainsKey(effect) ? ((BaseCreature)target).BardEffects[effect] : null;
+
+            return null;
         }
     }
 }

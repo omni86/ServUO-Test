@@ -3,6 +3,7 @@ using System.Collections;
 using Server.Mobiles;
 using Server.Network;
 using Server.Spells;
+using Server.Spells.Bard;
 using Server.Spells.Necromancy;
 
 namespace Server.Items
@@ -131,7 +132,15 @@ namespace Server.Items
             {
                 DoBleed(this.m_Mobile, this.m_From, 5 - this.m_Count);
 
-                if (++this.m_Count == 5)
+                #region Bard Masteries
+
+                Mobile bard = BardHelper.HasEffect(m_Mobile, BardEffect.Resilience);
+
+                if (bard != null)
+                    this.m_Count += BardHelper.Scaler(bard, 1, 3, 0);
+
+                #endregion
+                if (++this.m_Count >= 5)
                     EndBleed(this.m_Mobile, true);
             }
         }

@@ -120,7 +120,7 @@ namespace Server.Spells.Bard
             }
             else
             {
-                TribulationUpkeepTimer song = new TribulationUpkeepTimer(m_Upkeep, from, null, (Mobile)targeted);
+                TribulationUpkeepTimer song = new TribulationUpkeepTimer(from, (Mobile)targeted);
 
             }
         }
@@ -130,34 +130,30 @@ namespace Server.Spells.Bard
     {
         private readonly Mobile m_Target;
 
-        public TribulationUpkeepTimer(int upkeep, Mobile caster, BuffInfo buffInfo, Mobile target)
+        public TribulationUpkeepTimer(Mobile caster, Mobile target)
             : base(caster, false, BardEffect.Tribulation, 11)
         {
             m_Target = target;
+            AddTarget(target);
         }
 
-        protected override void OnTick()
+        protected override bool IsTarget(Mobile m)
         {
-            if (++m_CurrentRound >= m_TotalRounds)
-                EndEffect(m_Target);
-            else
-                Effect(m_Target);
-
+            return m_Target == m;
         }
 
-        protected override void Effect(Mobile target)
+        protected override void StartEffect(Mobile m)
         {
-            //Sanity Check
-            if (!(target is Mobile)) return;
+            BardHelper.AddEffect(m_Caster, m, BardEffect.Tribulation);
 
-            m_Caster.SendMessage("Tribulation is not yet activated");
-
-
+            base.StartEffect(m);
         }
 
         protected override void EndEffect(Mobile m)
         {
-            if (!(m is Mobile)) return;
+            BardHelper.RemoveEffect(m, BardEffect.Tribulation);
+
+            base.EndEffect(m);
         }
     }
 }

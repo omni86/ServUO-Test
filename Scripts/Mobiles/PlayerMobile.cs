@@ -244,9 +244,9 @@ namespace Server.Mobiles
 	    private string m_BardActiveMastery = null;
 	    private DateTime m_BardLastMasterySwitch = new DateTime();
 
-        private Dictionary<BardEffect, Dictionary<AosAttribute, int>> m_BardEffects = new Dictionary<BardEffect, Dictionary<AosAttribute, int>>();
+        private Dictionary<BardEffect, Mobile> m_BardEffects = new Dictionary<BardEffect, Mobile>();
 
-        public Dictionary<BardEffect, Dictionary<AosAttribute, int>> BardEffects { get { return m_BardEffects; } set { m_BardEffects = value; } }
+        public Dictionary<BardEffect, Mobile> BardEffects { get { return m_BardEffects; } set { m_BardEffects = value; } }
 
 	    public List<string> BardMasteries { get { return m_BardMasteries; } set { m_BardMasteries = value; } }
 

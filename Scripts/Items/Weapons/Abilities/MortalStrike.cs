@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Server.Spells.Bard;
 
 namespace Server.Items
 {
@@ -73,9 +74,21 @@ namespace Server.Items
             defender.PlaySound(0x1E1);
             defender.FixedParticles(0x37B9, 244, 25, 9944, 31, 0, EffectLayer.Waist);
 
+            TimeSpan playerDuration = PlayerDuration;
+
             // Do not reset timer if one is already in place.
             if (!IsWounded(defender))
-                BeginWound(defender, defender.Player ? PlayerDuration : NPCDuration);
+            {
+                Mobile bard = BardHelper.HasEffect(defender, BardEffect.Resilience);
+                #region Bard Masteries
+
+                if (bard != null)
+                    playerDuration = playerDuration.Subtract(TimeSpan.FromSeconds(6*BardHelper.Scaler(bard, 10, 40, 2)/100));
+                #endregion
+
+                BeginWound(defender, defender.Player ? playerDuration : NPCDuration);
+            }
+                
         }
 
         private class InternalTimer : Timer

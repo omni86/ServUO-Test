@@ -1,8 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using Server.Engines.PartySystem;
-using Server.Items;
+﻿// **********
+// ServUO - InspireChant.cs
+// **********
+
+#region References
+
+using System;
 using Server.Mobiles;
+
+#endregion
 
 namespace Server.Spells.Bard
 {
@@ -12,50 +17,36 @@ namespace Server.Spells.Bard
             "Inspire", "Uus Por",
             -1,
             9002);
+
         public InspireChant(Mobile caster, Item scroll)
             : base(caster, scroll, m_Info)
         {
-            
         }
 
-        public override Type SongType { get { return typeof(InspireUpkeepTimer); } }
+        public override Type SongType { get { return typeof (InspireUpkeepTimer); } }
 
-        public override TimeSpan CastDelayBase
-        {
-            get { return TimeSpan.FromSeconds(1.75); }
-        }
+        public override TimeSpan CastDelayBase { get { return TimeSpan.FromSeconds(1.75); } }
 
-        public override int RequiredMana
-        {
-            get { return 16; }
-        }
+        public override int RequiredMana { get { return 16; } }
 
-        public override int UpkeepCost
-        {
-            get { return 4; }
-        }
+        public override int UpkeepCost { get { return 4; } }
 
-        public override bool BlocksMovement
-        {
-            get { return false; }
-        }
+        public override bool BlocksMovement { get { return false; } }
 
         public override void OnCast()
         {
             if (CanSing())
-                new InspireUpkeepTimer(this.UpkeepCost, this.Caster).Start();
+                new InspireUpkeepTimer(Caster).Start();
 
-            this.FinishSequence();   
+            FinishSequence();
         }
-
     }
 
     public class InspireUpkeepTimer : BardTimer
     {
-        public InspireUpkeepTimer(int upkeep, Mobile caster) 
+        public InspireUpkeepTimer( Mobile caster)
             : base(caster, true, BardEffect.Inspire)
         {
-            
         }
 
         protected override bool IsTarget(Mobile m)
@@ -68,19 +59,12 @@ namespace Server.Spells.Bard
 
         protected override void StartEffect(Mobile m)
         {
-            //Sanity Check
-            if (!(m is PlayerMobile)) return;
-
             PlayerMobile target = m as PlayerMobile;
+            //Sanity Check
+            if (target == null) return;
 
-            int HCI_SDI = BardHelper.Scaler(m_Caster, 4, 165, 2);
 
-            target.BardEffects.Add(BardEffect.Inspire, new Dictionary<AosAttribute, int>()
-            {
-                {AosAttribute.AttackChance, HCI_SDI},
-                {AosAttribute.SpellDamage, HCI_SDI},
-                {AosAttribute.WeaponDamage, BardHelper.Scaler(m_Caster, 20, 40, 18)}
-            });
+            BardHelper.AddEffect(m_Caster, target, BardEffect.Inspire);
 
             base.StartEffect(m);
         }
