@@ -208,11 +208,8 @@ namespace Server.Spells.Bard
 
             if (m_Targets.Count == 0 || m_Caster.Mana < BardHelper.GetUpkeepCost(m_Caster, m_BardEffect, m_Targets.Count))
                 EndSong();
-            else if (!m_Beneficial)
-            {
-                if (++m_CurrentRound >= m_TotalRounds)
-                    EndSong();
-            }
+            else if (!m_Beneficial && ++m_CurrentRound >= m_TotalRounds)
+                EndSong();
             else
                 m_Caster.Mana -= BardHelper.GetUpkeepCost(m_Caster, m_BardEffect, m_Targets.Count);
         }
