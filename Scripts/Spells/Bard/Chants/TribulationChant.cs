@@ -107,11 +107,11 @@ namespace Server.Spells.Bard
             }
             else if (from.Region.IsPartOf(typeof (SafeZone)))
             {
-                from.SendMessage("You may not peacemake in this area.");
+                from.SendMessage("You may not discord in this area.");
             }
             else if (((Mobile) targeted).Region.IsPartOf(typeof (SafeZone)))
             {
-                from.SendMessage("You may not peacemake there.");
+                from.SendMessage("You may not discord there.");
             }
             else if (!m_Instrument.IsChildOf(from.Backpack))
             {
