@@ -42,6 +42,33 @@ namespace Server.Spells.Bard
                     return new BuffInfo(BuffIcon.Invigorate, 1115613, 1115730,
                         String.Format("{0}\t{1}\t{2}\t{3}", HPI, statIncrease, statIncrease, statIncrease), false);
                     // Invigorate +~1_HPI~ Hit Point Increase.<br>+~2_STR~ Strength.<br>+~3_INT~ Intelligence.<br>+~4_DEX~ Dexterity.<br>
+
+                case BardEffect.Resilience:
+                    int regenBonus = Scaler(caster, 2, 16, 2);
+                    return new BuffInfo(BuffIcon.Resilience, 1115614, 1115731,
+                        String.Format("{0}\t{1}\t{2}", regenBonus, regenBonus, regenBonus), false);
+                    // Resilience +~1_HPR~ Hit Point Regeneration.<br>+~2_SR~ Stamina Regeneration.<br>+~3_MR~ Mana Regeneration.<br>Curse Durations Reduced.<br>Resistance to Poison.<br>Bleed Duration Reduced.<br>Mortal Wound Duration Reduced.
+
+                case BardEffect.Perseverance:
+                    int DCI_DTR = Scaler(caster, 2, 24, 1);
+                    int castingFocus = Scaler(caster, 1, 4, 0.33);
+                    return new BuffInfo(BuffIcon.Perseverance, 1115615, 1115732,
+                        String.Format("{0}\t{1}\t{2}", DCI_DTR, DCI_DTR, castingFocus), false);
+                    // Perseverance +~1_DCI~% Defense Chance Increase.<br>~2_DAM~% Damage Taken.<br>+~3_CF~% Casting Focus.<br>
+
+                case BardEffect.Tribulation:
+                    int HCID_SPID = Scaler(caster, -5, -22, -1.66);
+                    int damageBurst = Scaler(caster, 15, 60, 4);
+                    return new BuffInfo(BuffIcon.Tribulation, 1115616, 1115742,
+                        String.Format("{0}\t{1}\t{2}", HCID_SPID, HCID_SPID, damageBurst), false);
+                    // Tribulation ~1_HCI~% Hit Chance.<br>~2_SDI~% Spell Damage.<br>Damage taken has a ~3_EXP~% chance to cause additional burst of physical damage.<br>
+
+                case BardEffect.Despair:
+                    int strDecrease = Scaler(caster, -4, -16, -1);
+                    int dotDmg = Scaler(caster, 9, 36, 6);
+                    return new BuffInfo(BuffIcon.Despair, 1115617, 1115743,
+                        String.Format("{0}\t{1}", strDecrease, dotDmg), false);
+                    // Despair ~1_STR~ Strength.<br>~2_DAM~ physical damage every 2 seconds while spellsong remains in effect.<br>
             }
 
             return new BuffInfo(BuffIcon.Bless, 500000);
@@ -83,7 +110,7 @@ namespace Server.Spells.Bard
             return cost;
         }
 
-        public static int Scaler(Mobile mobile, int low, int high, int complementryModifier)
+        public static int Scaler(Mobile mobile, int low, int high, double complementryModifier, bool complementrySkillsOnly = true)
         {
             int complementryPoints = 0;
 
@@ -96,17 +123,17 @@ namespace Server.Spells.Bard
             if (mobile.Skills.Provocation.Base > 100)
                 complementryPoints += (int) Math.Floor((mobile.Skills.Provocation.Base - 100.0)/10);
 
-            if (mobile.Skills.Musicianship.Base > 100)
+            if (!complementrySkillsOnly && mobile.Skills.Musicianship.Base > 100)
                 complementryPoints += (int) Math.Floor((mobile.Skills.Musicianship.Base - 100.0)/10);
 
 
             double scale = (high - low)/(120.0 - 90.0);
 
-            int value = (int) (low + ((mobile.Skills.Musicianship.Base - 90)*scale));
+            double value = (low + ((mobile.Skills.Musicianship.Base - 90) * scale));
 
-            value += (complementryModifier*complementryPoints);
+            value += (complementryModifier * complementryPoints);
 
-            return value;
+            return (int)value;
         }
 
         public static BardTimer GetActiveSong(Mobile mobile, Type songType)
