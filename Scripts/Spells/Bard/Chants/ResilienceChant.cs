@@ -103,6 +103,8 @@ namespace Server.Spells.Bard
             PlayerMobile target = m as PlayerMobile;
 
             target.BardEffects.Remove(BardEffect.Resilience);
+
+            base.EndEffect(m);
         }
     }
 }
