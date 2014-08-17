@@ -15,7 +15,7 @@ namespace Server.Misc
             "Second Backup",
             "Most Recent"
         };
-        private static bool m_SavesEnabled = true;
+        private static bool m_SavesEnabled = false;
         public AutoSave()
             : base(m_Delay - m_Warning, m_Delay)
         {
