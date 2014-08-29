@@ -79,19 +79,31 @@ namespace Server.Mobiles
 
         public override void OnDeath(Container c)
         {
-            base.OnDeath(c);
 
-            if (Utility.RandomDouble() < 0.10)
+            base.OnDeath(c);
+            Region reg = Region.Find(c.GetWorldLocation(), c.Map);
+            if (1.0 > Utility.RandomDouble() && reg.Name == "Cavern of the Discarded")
             {
-                switch (Utility.Random(2))
-                {
-                    case 0:
-                        c.DropItem(new AbyssalCloth());
-                        break;
-                    case 1:
-                        c.DropItem(new PowderedIron());
-                        break;
-                }
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new AbyssalCloth());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new PowderedIron());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new CrystallineBlackrock());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new EssenceBalance());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new CrystalShards());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new ArcanicRuneStone());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new DelicateScales());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new SeedRenewal());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new CrushedGlass());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new ElvenFletchings());
             }
         }
 

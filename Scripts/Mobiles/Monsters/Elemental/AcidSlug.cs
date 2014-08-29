@@ -52,7 +52,20 @@ namespace Server.Mobiles
         {
             this.AddLoot(LootPack.Average);
         }
+        public override void OnDeath(Container c)
+        {
 
+            base.OnDeath(c);
+            Region reg = Region.Find(c.GetWorldLocation(), c.Map);
+            if (1.0 > Utility.RandomDouble() && reg.Name == "Passage of Tears")
+            {
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new EssenceSingularity());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new VialOfVitriol());
+
+            }
+        }
         public override int GetIdleSound()
         {
             return 1499;

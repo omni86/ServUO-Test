@@ -76,16 +76,36 @@ namespace Server.Mobiles
         {
             this.AddLoot(LootPack.Rich);
         }
-
         public override void OnDeath(Container c)
         {
-            base.OnDeath(c);
 
-            if (Utility.RandomDouble() < 0.10)
+            base.OnDeath(c);
+            Region reg = Region.Find(c.GetWorldLocation(), c.Map);
+            if (1.0 > Utility.RandomDouble() && reg.Name == "Cavern of the Discarded")
             {
-                c.DropItem(new CrystallineBlackrock());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new AbyssalCloth());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new PowderedIron());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new CrystallineBlackrock());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new EssenceBalance());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new CrystalShards());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new ArcanicRuneStone());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new DelicateScales());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new SeedRenewal());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new CrushedGlass());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new ElvenFletchings());
             }
         }
+
 
         public override void Serialize(GenericWriter writer)
         {
