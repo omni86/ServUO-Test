@@ -55,8 +55,15 @@ namespace Server.Mobiles
 		
         public override void OnDeath(Container c)
         {
-            base.OnDeath(c);		
-				
+            base.OnDeath(c);
+            Region reg = Region.Find(c.GetWorldLocation(), c.Map);
+            if (1.0 > Utility.RandomDouble() && reg.Name == "The Secret Gardens")
+            {
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new EssenceFeeling());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new FaeryDust());
+            }
             #region Mondain's Legacy
             if (Utility.RandomDouble() < 0.3)
                 c.DropItem(new PixieLeg());

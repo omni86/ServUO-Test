@@ -95,7 +95,18 @@ namespace Server.Mobiles
             this.AddLoot(LootPack.Rich);
             this.AddLoot(LootPack.Average);
         }
-
+        public override void OnDeath(Container c)
+        {
+            base.OnDeath(c);
+            Region reg = Region.Find(c.GetWorldLocation(), c.Map);
+            if (1.0 > Utility.RandomDouble() && reg.Name == "The Secret Gardens")
+            {
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new EssenceFeeling());
+                if (Utility.RandomDouble() < 0.6)
+                    c.DropItem(new FaeryDust());
+            }
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
