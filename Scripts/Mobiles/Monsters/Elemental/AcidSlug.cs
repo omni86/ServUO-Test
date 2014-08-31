@@ -57,13 +57,14 @@ namespace Server.Mobiles
 
             base.OnDeath(c);
             Region reg = Region.Find(c.GetWorldLocation(), c.Map);
-            if (1.0 > Utility.RandomDouble() && reg.Name == "Passage of Tears")
+            if (0.25 > Utility.RandomDouble() && reg.Name == "Passage of Tears")
             {
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new EssenceSingularity());
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new VialOfVitriol());
+                switch (Utility.Random(2))
+                {
+                    case 0: c.DropItem(new EssenceSingularity()); break;
+                    case 1: c.DropItem(new VialOfVitriol()); break;
 
+                }
             }
         }
         public override int GetIdleSound()

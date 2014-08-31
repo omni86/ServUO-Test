@@ -83,19 +83,19 @@ namespace Server.Mobiles
 
             base.OnDeath(c);
             Region reg = Region.Find(c.GetWorldLocation(), c.Map);
-            if (1.0 > Utility.RandomDouble() && reg.Name == "Crimson Veins")
+            if (0.25 > Utility.RandomDouble() && reg.Name == "Crimson Veins")
             {
-                if (Utility.RandomDouble() < 0.6)
+                if (Utility.RandomDouble() < 0.25)
                     c.DropItem(new EssencePrecision());
             }
-            if (1.0 > Utility.RandomDouble() && reg.Name == "Fire Temple Ruins")
+            if (0.25 > Utility.RandomDouble() && reg.Name == "Fire Temple Ruins")
             {
-                if (Utility.RandomDouble() < 0.6)
+                if (Utility.RandomDouble() < 0.25)
                     c.DropItem(new EssenceOrder());
             }
-            if (1.0 > Utility.RandomDouble() && reg.Name == "Lava Caldera")
+            if (0.25 > Utility.RandomDouble() && reg.Name == "Lava Caldera")
             {
-                if (Utility.RandomDouble() < 0.6)
+                if (Utility.RandomDouble() < 0.25)
                     c.DropItem(new EssencePassion());
             }
         }
