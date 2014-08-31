@@ -6,59 +6,66 @@ using Server.Targeting;
 
 namespace Server.Items
 {
-	public class ScrollBinderTarget : Target // Create our targeting class (which we derive from the base target class)
-	{
-		private ScrollBinderDeed m_Deed;
+    public class ScrollBinderTarget : Target // Create our targeting class (which we derive from the base target class)
+    {
+        private ScrollBinderDeed m_Deed;
 
-		public ScrollBinderTarget( ScrollBinderDeed deed ) : base( 1, false, TargetFlags.None )
-		{
-			m_Deed = deed;
-		}
+        public ScrollBinderTarget(ScrollBinderDeed deed)
+            : base(1, false, TargetFlags.None)
+        {
+            m_Deed = deed;
+        }
 
-		protected override void OnTarget( Mobile from, object target ) // Override the protected OnTarget() for our feature
-		{
-			if ( m_Deed.Deleted || m_Deed.RootParent != from )//sanity check...
-				return;
+        protected override void OnTarget(Mobile from, object target) // Override the protected OnTarget() for our feature
+        {
+            if (this.m_Deed.Deleted || this.m_Deed.RootParent != from)
+                return;
 
-            if (!((Item)target).IsChildOf(from.Backpack))
+            if (target is Item)
             {
-                from.SendMessage("That must be in your pack");
-                return;
-            }
-            //Shortcut the targets ... each checks to make sure the values are in scope, 
-            //then passes back to Scrollbinder that called it Via a refference
+                Item item = (Item)target;
 
-			if ( target is PowerScroll )
-			{
-                if (((PowerScroll)target).Value <= 120)
-                    m_Deed.Calculate((PowerScroll)target, from);
+                if (item.RootParent != from)
+                    from.SendMessage("That must be in your pack");
+
+
+                //Shortcut the targets ... each checks to make sure the values are in scope, 
+                //then passes back to Scrollbinder that called it Via a refference
+
+                else if (target is PowerScroll)
+                {
+                    if (((PowerScroll)target).Value <= 120)
+                        m_Deed.Calculate((PowerScroll)target, from);
+                    else
+                        from.SendMessage("A higher value does not exist");
+                    return;
+                }
+
+                else if (target is ScrollofTranscendence)
+                {
+                    m_Deed.Calculate((ScrollofTranscendence)target, from);
+                    return;
+                }
+
+                else if (target is StatCapScroll)
+                {
+                    if (((StatCapScroll)target).Value <= 250)
+                        m_Deed.Calculate((StatCapScroll)target, from);
+                    else
+                        from.SendMessage("A higher value does not exist");
+                    return;
+                }
                 else
-                    from.SendMessage("A higher value does not exist");
-                return;
-			}
+                {
+                    from.SendMessage("That is not an acceptable type"); // returns fail message to the player
 
-            if (target is ScrollofTranscendence)
-			{
-                m_Deed.Calculate((ScrollofTranscendence)target, from);
-                return;
-			}
-
-            if (target is StatCapScroll)
-            {
-                if (((StatCapScroll)target).Value <= 250)
-                    m_Deed.Calculate((StatCapScroll)target, from);
-                else
-                    from.SendMessage("A higher value does not exist");
-                return;
+                }
             }
+        }
+    }
 
-            from.SendMessage("That is not an acceptable type"); // returns fail message to the player
-            return;
-		}
-	}
-
-	public class ScrollBinderDeed : Item // Create the item class which is derived from the base item class
-	{
+    public class ScrollBinderDeed : Item // Create the item class which is derived from the base item class
+    {
         private SkillName m_skillname;   // name of the skill to which this is associated
 
         private double m_skillvalue = 0.0;// Value of given skill/ stat
@@ -93,27 +100,29 @@ namespace Server.Items
             set { m_count = value; InvalidateProperties(); }
         }
 
-		[Constructable]
-		public ScrollBinderDeed() : base(0x14F0)
-		{
-            
+        [Constructable]
+        public ScrollBinderDeed()
+            : base(0x14F0)
+        {
+
             this.Name = "a Scroll Binder";
             Weight = 1.0;
             Hue = 334;
-			LootType = LootType.Cursed;
+            LootType = LootType.Cursed;
             ItemID = (0x014F0);
             InvalidateProperties();
-		}
+        }
 
-		public ScrollBinderDeed( Serial serial ) : base( serial )
-		{
-		}
+        public ScrollBinderDeed(Serial serial)
+            : base(serial)
+        {
+        }
 
-		public override void Serialize( GenericWriter writer )
-		{
-			base.Serialize( writer );
+        public override void Serialize(GenericWriter writer)
+        {
+            base.Serialize(writer);
 
-			writer.Write( (int) 1 ); // version
+            writer.Write((int)1); // version
 
             writer.Write((int)m_skillname);
             writer.Write((double)m_skillvalue);
@@ -132,13 +141,13 @@ namespace Server.Items
             }
             else
                 writer.Write((int)0);
-		}
+        }
 
-		public override void Deserialize( GenericReader reader )
-		{
+        public override void Deserialize(GenericReader reader)
+        {
             base.Deserialize(reader);
 
-			int version = reader.ReadInt();
+            int version = reader.ReadInt();
             switch (version)
             {
                 case 1:
@@ -171,7 +180,7 @@ namespace Server.Items
                                         break;
                                     }
                             }
-                            
+
                         }
                     }
                     goto case 0;
@@ -180,7 +189,7 @@ namespace Server.Items
 
             }
             InvalidateProperties();
-		}
+        }
 
         public void Calculate(SpecialScroll scroll, Mobile from)// does the calculations for Scroll binder
         {
@@ -201,9 +210,9 @@ namespace Server.Items
                 return;
             }
             // long if statement to ensure that both the target and the current refferences are the same type
-            if ((check is PowerScroll && scroll is PowerScroll) 
-                || ( check is StatCapScroll && scroll is StatCapScroll)
-                || (check is ScrollofTranscendence && scroll is ScrollofTranscendence ))
+            if ((check is PowerScroll && scroll is PowerScroll)
+                || (check is StatCapScroll && scroll is StatCapScroll)
+                || (check is ScrollofTranscendence && scroll is ScrollofTranscendence))
             {
                 if (scroll.Skill == m_skillname) //same SkillName
                 {
@@ -232,7 +241,7 @@ namespace Server.Items
                         Create(m_count, from);
                         scroll.Delete();
                         return;
-                        
+
                     }
                     else
                     {
@@ -243,8 +252,8 @@ namespace Server.Items
                 else
                 {
                     from.SendMessage(" That does not have the same skill ");//different skillname message
-                        return;
-                }   
+                    return;
+                }
             }
             else
             {
@@ -282,42 +291,42 @@ namespace Server.Items
                     int valid = Convert.ToInt32(m_skillvalue);
                     switch (valid)
                     {
-                            //PowerScrolls
+                        //PowerScrolls
                         case 105:
-                            {
-                                m_maxneeded = 12;
-                                break;
-                            }
-                        case 110:
-                            {
-                                m_maxneeded = 16;
-                                break;
-                            }
-                        case 115:
-                            {
-                                m_maxneeded = 20;
-                                break;
-                            }
-                            //StatCapScrolls (formula --> 225 + (stat adjument) = value)
-
-                        case 230://5
                             {
                                 m_maxneeded = 8;
                                 break;
                             }
-                        case 235://10
-                            {
-                                m_maxneeded = 10;
-                                break;
-                            }
-                        case 240://15
+                        case 110:
                             {
                                 m_maxneeded = 12;
                                 break;
                             }
+                        case 115:
+                            {
+                                m_maxneeded = 10;
+                                break;
+                            }
+                        //StatCapScrolls (formula --> 225 + (stat adjument) = value)
+
+                        case 230://5
+                            {
+                                m_maxneeded = 6;
+                                break;
+                            }
+                        case 235://10
+                            {
+                                m_maxneeded = 8;
+                                break;
+                            }
+                        case 240://15
+                            {
+                                m_maxneeded = 8;
+                                break;
+                            }
                         case 245://20
                             {
-                                m_maxneeded = 16;
+                                m_maxneeded = 5;
                                 break;
                             }
                     }
@@ -339,8 +348,8 @@ namespace Server.Items
             { // Directions for use appears on item
                 list.Add("Used to combine PS, Stat scrolls, or Scrolls of Transcendence \n ( Double-Click to target Scrolls )");
             }
-                
-            
+
+
             else
             { //displays according to Type stored so Players can see
                 if (check is PowerScroll)
@@ -354,17 +363,17 @@ namespace Server.Items
             }
         }
 
-		public override void OnDoubleClick( Mobile from ) // Override double click of the deed to call our target
-		{
-			if ( !IsChildOf( from.Backpack ) ) // Make sure its in their pack
-			{
-				 from.SendLocalizedMessage( 1042001 ); // That must be in your pack for you to use it.
-			}
-			else
-			{
-				from.SendMessage("Which scroll would you like to add?"); 
-				from.Target = new ScrollBinderTarget( this ); // Call our target
-			 }
-		}	
-	}
+        public override void OnDoubleClick(Mobile from) // Override double click of the deed to call our target
+        {
+            if (!IsChildOf(from.Backpack)) // Make sure its in their pack
+            {
+                from.SendLocalizedMessage(1042001); // That must be in your pack for you to use it.
+            }
+            else
+            {
+                from.SendMessage("Which scroll would you like to add?");
+                from.Target = new ScrollBinderTarget(this); // Call our target
+            }
+        }
+    }
 }

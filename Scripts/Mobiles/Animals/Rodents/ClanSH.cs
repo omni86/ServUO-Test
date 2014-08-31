@@ -78,30 +78,24 @@ namespace Server.Mobiles
 
             base.OnDeath(c);
             Region reg = Region.Find(c.GetWorldLocation(), c.Map);
-            if (1.0 > Utility.RandomDouble() && reg.Name == "Cavern of the Discarded")
+            if (0.25 > Utility.RandomDouble() && reg.Name == "Cavern of the Discarded")
             {
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new AbyssalCloth());
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new PowderedIron());
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new CrystallineBlackrock());
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new EssenceBalance());
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new CrystalShards());
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new ArcanicRuneStone());
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new DelicateScales());
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new SeedRenewal());
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new CrushedGlass());
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new ElvenFletchings());
+                switch (Utility.Random(10))
+                {
+                    case 0: c.DropItem(new AbyssalCloth());
+                    case 1: c.DropItem(new PowderedIron());
+                    case 2: c.DropItem(new CrystallineBlackrock());
+                    case 3: c.DropItem(new EssenceBalance());
+                    case 4: c.DropItem(new CrystalShards());
+                    case 5: c.DropItem(new ArcanicRuneStone());
+                    case 6: c.DropItem(new DelicateScales());
+                    case 7: c.DropItem(new SeedRenewal());
+                    case 8: c.DropItem(new CrushedGlass());
+                    case 9: c.DropItem(new ElvenFletchings());
+                }
             }
         }
+      
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
