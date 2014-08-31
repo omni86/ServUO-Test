@@ -82,16 +82,16 @@ namespace Server.Mobiles
             {
                 switch (Utility.Random(10))
                 {
-                    case 0: c.DropItem(new AbyssalCloth());
-                    case 1: c.DropItem(new PowderedIron());
-                    case 2: c.DropItem(new CrystallineBlackrock());
-                    case 3: c.DropItem(new EssenceBalance());
-                    case 4: c.DropItem(new CrystalShards());
-                    case 5: c.DropItem(new ArcanicRuneStone());
-                    case 6: c.DropItem(new DelicateScales());
-                    case 7: c.DropItem(new SeedRenewal());
-                    case 8: c.DropItem(new CrushedGlass());
-                    case 9: c.DropItem(new ElvenFletchings());
+                    case 0: c.DropItem(new AbyssalCloth()); break;
+                    case 1: c.DropItem(new PowderedIron()); break;
+                    case 2: c.DropItem(new CrystallineBlackrock()); break;
+                    case 3: c.DropItem(new EssenceBalance()); break;
+                    case 4: c.DropItem(new CrystalShards()); break;
+                    case 5: c.DropItem(new ArcanicRuneStone()); break;
+                    case 6: c.DropItem(new DelicateScales()); break;
+                    case 7: c.DropItem(new SeedRenewal()); break;
+                    case 8: c.DropItem(new CrushedGlass()); break;
+                    case 9: c.DropItem(new ElvenFletchings()); break;
                 }
             }
         }
