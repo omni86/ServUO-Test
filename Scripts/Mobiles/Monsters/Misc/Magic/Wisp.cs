@@ -99,12 +99,13 @@ namespace Server.Mobiles
         {
             base.OnDeath(c);
             Region reg = Region.Find(c.GetWorldLocation(), c.Map);
-            if (1.0 > Utility.RandomDouble() && reg.Name == "The Secret Gardens")
+            if (0.25 > Utility.RandomDouble() && reg.Name == "The Secret Gardens")
             {
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new EssenceFeeling());
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new FaeryDust());
+                switch (Utility.Random(2))
+                {
+                    case 0: c.DropItem(new EssenceFeeling()); break;
+                    case 1: c.DropItem(new FaeryDust()); break;
+                }
             }
         }
         public override void Serialize(GenericWriter writer)

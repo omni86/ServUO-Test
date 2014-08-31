@@ -95,19 +95,21 @@ namespace Server.Mobiles
 
             base.OnDeath(c);
             Region reg = Region.Find(c.GetWorldLocation(), c.Map);
-            if (1.0 > Utility.RandomDouble() && reg.Name == "Fire Temple Ruins")
+            if (0.25 > Utility.RandomDouble() && reg.Name == "Fire Temple Ruins")
             {
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new EssenceOrder());
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new LavaSerpenCrust());
-            }
-            if (1.0 > Utility.RandomDouble() && reg.Name == "Lava Caldera")
-            {
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new EssencePassion());
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new LavaSerpenCrust());
+                switch (Utility.Random(2))
+                {
+                    case 0: c.DropItem(new EssenceOrder()); break;
+                    case 1: c.DropItem(new LavaSerpenCrust()); break;
+                }
+                if (0.25 > Utility.RandomDouble() && reg.Name == "Lava Caldera")
+                {
+                    switch (Utility.Random(2))
+                    {
+                        case 0: c.DropItem(new EssenceOrder()); break;
+                        case 1: c.DropItem(new LavaSerpenCrust()); break;
+                    }
+                }
             }
         }
         public override void Serialize(GenericWriter writer)

@@ -148,13 +148,14 @@ namespace Server.Mobiles
 
             base.OnDeath(c);
             Region reg = Region.Find(c.GetWorldLocation(), c.Map);
-            if (1.0 > Utility.RandomDouble() && reg.Name == "Enslaved Goblins")
+            if (0.25 > Utility.RandomDouble() && reg.Name == "Enslaved Goblins")
             {
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new EssenceControl());
-                if (Utility.RandomDouble() < 0.6)
-                    c.DropItem(new GoblinBlood());
+                switch (Utility.Random(2))
+                {
+                    case 0: c.DropItem(new EssenceControl()); break;
+                    case 1: c.DropItem(new GoblinBlood()); break;
 
+                }
             }
         }
         public override void Serialize(GenericWriter writer)
