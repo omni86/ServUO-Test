@@ -146,7 +146,7 @@ namespace Server.Mobiles
         public override void OnDeath(Container c)
         {
 
-            bbase.OnDeath(c);
+            base.OnDeath(c);
             Region reg = Region.Find(c.GetWorldLocation(), c.Map);
             if (0.25 > Utility.RandomDouble() && reg.Name == "Enslaved Goblins")
             {
